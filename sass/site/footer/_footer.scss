@@ -5,6 +5,9 @@
 	color: #fff;
 	background-color: $color__skin;
 	text-align: center;
+        a {
+            color: #fff;
+        }
 	
 	@media screen and (min-width: $query__small) {
 		padding: 1em 2em;

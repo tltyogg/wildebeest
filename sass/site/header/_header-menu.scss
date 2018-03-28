@@ -28,6 +28,7 @@
 				&.focus > ul {
 					left: 100%;
 				}
+                                
 			}
 
 			a {
@@ -39,11 +40,16 @@
 		li.focus > ul {
 			left: auto;
 		}
+                
 	}
 
 	li {
 		position: relative;
+                
 	}
+        li:last-child {
+            border: 1px solid $color__interactive;
+        }
 
 	a {
 		display: inline-block;
@@ -51,12 +57,18 @@
 		padding: .5em 1em .5em 0;
 		text-decoration: none;
 		color: #fff;
+                letter-spacing: 1.4px;
+                font-size:1.1em;
+                
 	}
 
 	a:hover,
 	a:focus {
 		text-decoration: underline;
+                color: $color__interactive;
+                font-weight: bold;
 	}
+        
 
 	.current_page_item > a,
 	.current-menu-item > a,
@@ -132,6 +144,7 @@ button.dropdown-toggle {
 					a {
 						width: 218px;
 						background: none;
+                                                font-size: 1.1em;
 					}
 				}
 			}
@@ -163,6 +176,7 @@ button.dropdown-toggle {
 			}
 			*/
 		}
+                
 
 	}
 }

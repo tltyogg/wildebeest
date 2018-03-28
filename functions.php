@@ -46,6 +46,7 @@ if ( ! function_exists( 'wildebeest_setup' ) ) :
 		register_nav_menus( array(
 			'menu-1' => esc_html__( 'Primary', 'wildebeest' ),
 		) );
+                
 
 		/*
 		 * Switch default core markup for search form, comment form, and comments
@@ -84,6 +85,70 @@ endif;
 add_action( 'after_setup_theme', 'wildebeest_setup' );
 
 /**
+ * Register custom fonts.
+ */
+function wildebeest_fonts_url() {
+	$fonts_url = '';
+
+	/**
+	 * Translators: If there are characters in your language that are not
+	 * supported by Source Sans Pro and PT Serif, translate this to 'off'. Do not translate
+	 * into your own language.
+	 */
+	$source_sans_pro = _x( 'on', 'Source Sans Pro font: on or off', 'wildebeest' );
+	$pt_serif = _x( 'on', 'PT Serif font: on or off', 'wildebeest' );
+        $patrick_hand = _x( 'on', 'Patrick Hand: on or off', 'wildebeest' );
+
+	$font_families = array();
+	
+	if ( 'off' !== $source_sans_pro ) {
+		$font_families[] = 'Source Sans Pro:400,400i,700,900';
+	}
+	
+	if ( 'off' !== $pt_serif ) {
+		$font_families[] = 'PT Serif:400,400i,700,700i';
+	}
+        
+        if ( 'off' !== $patrick_hand ) {
+		$font_families[] = 'Patrick Hand SC';
+	}
+	
+	
+	if ( in_array( 'on', array($source_sans_pro, $pt_serif, $patrick_hand) ) ) {
+
+		$query_args = array(
+			'family' => urlencode( implode( '|', $font_families ) ),
+			'subset' => urlencode( 'latin,latin-ext' ),
+		);
+
+		$fonts_url = add_query_arg( $query_args, 'https://fonts.googleapis.com/css' );
+	}
+
+	return esc_url_raw( $fonts_url );
+}
+
+/**
+ * Add preconnect for Google Fonts.
+ *
+ * @since Twenty Seventeen 1.0
+ *
+ * @param array  $urls           URLs to print for resource hints.
+ * @param string $relation_type  The relation type the URLs are printed.
+ * @return array $urls           URLs to print for resource hints.
+ */
+function wildebeest_resource_hints( $urls, $relation_type ) {
+	if ( wp_style_is( 'wildebeest-fonts', 'queue' ) && 'preconnect' === $relation_type ) {
+		$urls[] = array(
+			'href' => 'https://fonts.gstatic.com',
+			'crossorigin',
+		);
+	}
+
+	return $urls;
+}
+add_filter( 'wp_resource_hints', 'wildebeest_resource_hints', 10, 2 );
+
+/**
  * Set the content width in pixels, based on the theme's design and stylesheet.
  *
  * Priority 0 to make it available to lower priority callbacks.
@@ -113,13 +178,57 @@ function wildebeest_widgets_init() {
 		'before_title'  => '<h2 class="widget-title">',
 		'after_title'   => '</h2>',
 	) );
+        register_sidebar( array(
+		'name'          => esc_html__( 'Sponsors', 'wildebeest' ),
+		'id'            => 'front-page-1',
+		'description'   => esc_html__( 'Add widgets here.', 'wildebeest' ),
+		'before_widget' => '<section id="%1$s" class="widget %2$s">',
+		'after_widget'  => '</section>',
+		'before_title'  => '<h2 class="widget-title">',
+		'after_title'   => '</h2>',
+	) );
+        register_sidebar( array(
+		'name'          => esc_html__( 'Blog Section', 'wildebeest' ),
+		'id'            => 'front-page-2',
+		'description'   => esc_html__( 'Add widgets here.', 'wildebeest' ),
+		'before_widget' => '<section id="%1$s" class="widget %2$s">',
+		'after_widget'  => '</section>',
+		'before_title'  => '<h2 class="widget-title">',
+		'after_title'   => '</h2>',
+	) );
+        register_sidebar( array(
+		'name'          => esc_html__( 'Social Menu', 'wildebeest' ),
+		'id'            => 'social-menu',
+		'description'   => esc_html__( 'Add widgets here.', 'wildebeest' ),
+		'before_widget' => '<section id="%1$s" class="widget %2$s">',
+		'after_widget'  => '</section>',
+		'before_title'  => '<h2 class="widget-title">',
+		'after_title'   => '</h2>',
+	) );
 }
 add_action( 'widgets_init', 'wildebeest_widgets_init' );
+
+/**
+ * ----------------------------------------
+ *  Adds sidebar name, as class, on the body
+ * ----------------------------------------
+ */
+add_filter('body_class', 'init_add_sidebar_classes_to_body');
+function init_add_sidebar_classes_to_body($classes = '')
+{
+    if ( is_active_sidebar( 'sidebar-1' ) ) {
+        $classes[] = 'has-sidebar';
+    }
+    return $classes;
+}
 
 /**
  * Enqueue scripts and styles.
  */
 function wildebeest_scripts() {
+    // Enqueue Google Fonts: Source Sans Pro and PT Serif
+	wp_enqueue_style( 'wildebeest-fonts', wildebeest_fonts_url() );
+        
 	wp_enqueue_style( 'wildebeest-style', get_stylesheet_uri() );
 
 	wp_enqueue_script( 'wildebeest-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '20151215', true );

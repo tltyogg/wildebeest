@@ -13,8 +13,16 @@
  * @param array $classes Classes for the body element.
  * @return array
  */
+add_filter( 'body_class', 'wildebeest_body_classes' );
 function wildebeest_body_classes( $classes ) {
-	// Adds a class of group-blog to blogs with more than 1 published author.
+	
+        // Add a class telling us if the sidebar is in use.
+	if ( is_active_sidebar( 'sidebar-1' )) {
+		$classes[] = 'has-sidebar';
+	} else {
+		$classes[] = 'no-sidebar';
+	}
+        // Adds a class of group-blog to blogs with more than 1 published author.
 	if ( is_multi_author() ) {
 		$classes[] = 'group-blog';
 	}
@@ -23,10 +31,9 @@ function wildebeest_body_classes( $classes ) {
 	if ( ! is_singular() ) {
 		$classes[] = 'hfeed';
 	}
-
+	
 	return $classes;
 }
-add_filter( 'body_class', 'wildebeest_body_classes' );
 
 /**
  * Add a pingback url auto-discovery header for singularly identifiable articles.
